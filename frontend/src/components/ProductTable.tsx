@@ -125,19 +125,15 @@ const ProductTable = () => {
         formData.append("unit", tempRowData.unit);
         formData.append(
           "disabledStoreIds",
-          JSON.stringify(tempRowData.disabledStores)
+          JSON.stringify(tempRowData.disabledStores) // Ensure this is correct when updating
         );
         if (tempRowData.image) formData.append("image", tempRowData.image);
-        console.log(tempRowData, "JSON.stringify(tempRowData.disabledStores)");
-
-        await apiService.products.updateProduct(
-          tempRowData.id,
-          formData as unknown as Product
-        );
-
+  
+        await apiService.products.updateProduct(tempRowData.id, formData as unknown as Product);
+  
         const updatedRows = [...rows];
         updatedRows[editingRow] = tempRowData;
-
+  
         setRows(updatedRows);
         setEditingRow(null);
         setTempRowData(null);
@@ -148,7 +144,6 @@ const ProductTable = () => {
       console.error("Error updating product:", error);
     }
   };
-
   const handleNewRowChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked, files } = event.target;
     setNewRow({ ...newRow, [name]: type === "checkbox" ? checked : value });
@@ -276,26 +271,7 @@ const ProductTable = () => {
             name="status"
           />
         </TableCell>
-        <TableCell>
-          {renderDistributionPointSelect()}
-          </TableCell>
-          {/* <MultiSelect
-            allSelectOptions={distributionPoints.map((point) => ({
-              value: point.id,
-              label: point.name,
-            }))}
-            activeSelectedOptions={[]}
-            onSelected={(options) => console.log(options)}
-          </TableCell>
-        {/* <MultiSelect
-          allSelectOptions={distributionPoints.map((point) => ({
-            value: point.id,
-            label: point.name,
-          }))}
-          activeSelectedOptions={[]}
-          onSelected={(options) => console.log(options)}
-        /> */}
-
+        <TableCell>{renderDistributionPointSelect()}</TableCell>
         <TableCell>
           <TextField
             variant="outlined"
@@ -365,48 +341,43 @@ const ProductTable = () => {
 
   const handleDistributionPointChange = (event: any, isEditing = false) => {
     const value = event.target.value;
-    console.log(value, "handleDistributionPointChange");
-
-    // Add or remove selected store IDs in disabledStores array
+    
+    // Handle stores selection for new row or for editing
     if (isEditing && tempRowData) {
+      // Update the disabledStores for the edited row
       const updatedDisabledStores = [...tempRowData.disabledStores];
-
+  
       value.forEach((storeId: number) => {
         if (!updatedDisabledStores.includes(storeId)) {
-          updatedDisabledStores.push(storeId); // Add store if it's not already selected
+          updatedDisabledStores.push(storeId); // Add store if not already selected
         } else {
-          updatedDisabledStores.splice(
-            updatedDisabledStores.indexOf(storeId),
-            1
-          ); // Remove store if it's already selected
+          updatedDisabledStores.splice(updatedDisabledStores.indexOf(storeId), 1); // Remove store if already selected
         }
       });
-
+  
       setTempRowData({ ...tempRowData, disabledStores: updatedDisabledStores });
     } else {
+      // Update the disabledStores for the new row
       const updatedDisabledStores = [...newRow.disabledStores];
-
+  
       value.forEach((storeId: number) => {
         if (!updatedDisabledStores.includes(storeId)) {
-          updatedDisabledStores.push(storeId); // Add store if it's not already selected
+          updatedDisabledStores.push(storeId); // Add store if not already selected
         } else {
-          updatedDisabledStores.splice(
-            updatedDisabledStores.indexOf(storeId),
-            1
-          ); // Remove store if it's already selected
+          updatedDisabledStores.splice(updatedDisabledStores.indexOf(storeId), 1); // Remove store if already selected
         }
       });
-
+  
       setNewRow({ ...newRow, disabledStores: updatedDisabledStores });
     }
-    console.log(tempRowData, "tempRowData");
   };
+  
   const renderDistributionPointSelect = (isEditing = false) => (
     <FormControl fullWidth>
       <InputLabel>Distribution Points</InputLabel>
       <Select
         multiple
-        value={selectedDistributionPoints}
+        value={isEditing ? tempRowData.disabledStores : newRow.disabledStores} // Use the correct state
         onChange={(event) => handleDistributionPointChange(event, isEditing)}
         renderValue={(selected) => selected.join(", ")}
       >
@@ -415,10 +386,8 @@ const ProductTable = () => {
             <Checkbox
               checked={
                 isEditing
-                  ? tempRowData.distributionPoints?.includes(point.name)
-                  : newRow.disabledStores
-                      .map((point) => point)
-                      ?.includes(point.id)
+                  ? tempRowData.disabledStores.includes(point.id) // Check against tempRowData.disabledStores
+                  : newRow.disabledStores.includes(point.id) // Check against newRow.disabledStores
               }
             />
             <ListItemText primary={point.name} />
@@ -427,7 +396,8 @@ const ProductTable = () => {
       </Select>
     </FormControl>
   );
-
+  
+  
   return (
     <PageWrapper>
       <ToastContainer position="top-center" />

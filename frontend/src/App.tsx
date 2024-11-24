@@ -5,7 +5,7 @@ import styled from "styled-components";
 import NavBar from "./components/NavBar";
 import Cart from "./pages/Cart";
 import AdminSettings from "./pages/AdminSettings/AdminSettings";
-import { StoreContext, StoreProvider, useStore } from "./stores/StoreContext";
+import { StoreProvider, useStore } from "./stores/StoreContext";
 import dayjs from "dayjs";
 import { AppApiService } from "./services/app-api.service";
 import { BackOfficeLogin } from "./pages/backOfficeLogin/BackOfficeLogin";
@@ -14,7 +14,7 @@ import { AuthProvider } from "./context/AuthContext";
 import Registration from "./pages/backOfficeLogin/BackOfficeSignin";
 import SelectDistributionPointModal from "./components/SelectDistributionPointModal";
 import { Button } from "@mui/material";
-import './types/variables.css';
+import "./types/variables.css";
 const App: React.FC = () => {
   const apiService = new AppApiService();
   const [name, setName] = useState<string | undefined>(undefined);
@@ -23,7 +23,7 @@ const App: React.FC = () => {
   const [freeTextModal, setFreeTextModal] = useState<string>("");
   const [freeTextIsOpen, setFreeTextIsOpen] = useState<boolean>(true);
   const [showDistributionPointModal, setShowDistributionPointModal] = useState(
-    Object.keys(localStorage.getItem("distributionPoint") || {}).length === 0 ||
+    Object.keys(localStorage.getItem("distributionPoint") || {}).length === 0 &&
       location.pathname !== "/admin-settings"
   );
 
@@ -125,8 +125,9 @@ const PageWrapper = styled.div`
   h3,
   h2,
   p,
-  label,text {
-    color:var(--text-color);
+  label,
+  text {
+    color: var(--text-color);
   }
 `;
 

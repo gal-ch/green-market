@@ -12,11 +12,11 @@ import {
   TableHead,
   TableRow,
   Typography,
-  CircularProgress,  // Import CircularProgress for the loading spinner
+  CircularProgress, // Import CircularProgress for the loading spinner
 } from "@mui/material";
 import { Store } from "./DistributionPointsTable";
 import { BackOfficeApiService } from "../services/back-office-api.service";
-import { useStore } from "../stores/StoreContext";
+import { toast, ToastContainer } from "react-toastify";
 
 const modalStyle = {
   position: "absolute" as "absolute",
@@ -43,7 +43,7 @@ const EndOfDayModal: React.FC<IEndOfDayModal> = ({
 }) => {
   const [open, setOpen] = useState(isOpen);
   const [selectedPoints, setSelectedPoints] = useState<number[]>([]); // Array of store IDs
-  const [loading, setLoading] = useState(false);  // State to track loading status
+  const [loading, setLoading] = useState(false); // State to track loading status
   const apiService = new BackOfficeApiService();
   const getDaysMap = {
     Sunday: "ראשון",
@@ -71,9 +71,13 @@ const EndOfDayModal: React.FC<IEndOfDayModal> = ({
     if (selectedPoints.length) {
       setLoading(true); // Set loading to true when the request starts
       try {
-        await apiService.stores.closeStoreEndOfDayAndSendEmail(selectedPoints);
+        const response = await apiService.stores.closeStoreEndOfDayAndSendEmail(
+          selectedPoints
+        );
+        toast.success("ההזמנות נסגרו בהצלחה ");
       } catch (error) {
         console.error("Error closing store end of day:", error);
+        toast.error("עדכון נכשל, אנא נסה נסית במועד מאוחר יותר");
       } finally {
         setLoading(false); // Set loading to false when the request is complete
         setOpen(false);
@@ -83,18 +87,26 @@ const EndOfDayModal: React.FC<IEndOfDayModal> = ({
   };
 
   return (
+    <>
+    <ToastContainer position="top-center" />
+
     <Modal
       open={open}
       onClose={(e: React.MouseEvent) => e.preventDefault()} // Prevent closing the modal
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
+
       <Box sx={modalStyle}>
         <Typography variant="h6" id="modal-modal-title">
           סגירת יום
         </Typography>
         <Typography id="modal-modal-description" sx={{ mb: 2 }}>
           בחר את הנקודות בהן תרצה לסגור את ההזמנות
+        </Typography>
+        <Typography id="modal-modal-description" sx={{ mb: 2 }}>
+          פעולה זו תסגור את ההזמנות השייכים לאותן הזמנה וכן ישלח מייל עם ההזמנות
+          למנהל הנקודה
         </Typography>
 
         <ContentContainer>
@@ -120,7 +132,7 @@ const EndOfDayModal: React.FC<IEndOfDayModal> = ({
                     <TableCell>{point.name}</TableCell>
                     <TableCell>{point.address}</TableCell>
                     <TableCell>
-                      {getDaysMap[point.day] as unknown as string}
+                      {point.day as unknown as string}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -130,14 +142,14 @@ const EndOfDayModal: React.FC<IEndOfDayModal> = ({
 
           {/* Show the Save button or loading spinner based on the loading state */}
           {loading ? (
-            <CircularProgress />  // Display a loading spinner while waiting
+            <CircularProgress /> // Display a loading spinner while waiting
           ) : (
             <Button
               variant="contained"
               color="primary"
               onClick={handleSave}
               sx={{ mt: 2 }}
-              disabled={loading}  // Disable button while loading
+              disabled={loading} // Disable button while loading
             >
               Save
             </Button>
@@ -145,6 +157,7 @@ const EndOfDayModal: React.FC<IEndOfDayModal> = ({
         </ContentContainer>
       </Box>
     </Modal>
+    </>
   );
 };
 

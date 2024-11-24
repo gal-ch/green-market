@@ -26,6 +26,7 @@ export type Store = {
   status: boolean;
   name: string;
   manager: string;
+  managerEmail: string;
   address: string;
   day: string;
   closingDay: string;
@@ -63,6 +64,7 @@ const DistributionPointsTable = () => {
       status: false,
       name: "",
       manager: "",
+      managerEmail: "",
       address: "",
       day: "",
       closingDay: "",
@@ -136,6 +138,7 @@ const DistributionPointsTable = () => {
             <TableCell>שם</TableCell>
             <TableCell>כתובת</TableCell>
             <TableCell>מנהל</TableCell>
+            <TableCell>אימייל</TableCell>
             <TableCell>שעת התחלה</TableCell>
             <TableCell>יום חלוקה</TableCell>
             <TableCell>יום סגירת ההזמנות</TableCell>
@@ -197,6 +200,7 @@ const StaticRow = ({ row }: any) => (
     <TableCell>{row.name}</TableCell>
     <TableCell>{row.address}</TableCell>
     <TableCell>{row.manager}</TableCell>
+    <TableCell>{row.managerEmail}</TableCell>
     <TableCell>{row.hour}</TableCell>
     <TableCell>{row.day}</TableCell>
     <TableCell>{row.closingDay}</TableCell>
@@ -228,6 +232,14 @@ const EditableRow = ({ index, row, onChange }: any) => (
         name="manager"
         size="small"
         value={row.manager}
+        onChange={(e) => (index === -1 ? onChange(e) : onChange(index, e))}
+      />
+    </TableCell>
+    <TableCell>
+      <TextField
+        name="manager Email"
+        size="small"
+        value={row.managerEmail}
         onChange={(e) => (index === -1 ? onChange(e) : onChange(index, e))}
       />
     </TableCell>
@@ -302,7 +314,7 @@ const SelectDropdown = ({
 
 const NewRow = ({ newRow, onAdd, onChange, isValid }: any) => (
   <TableRow>
-    <EditableRow row={newRow} onChange={(e: any) => onChange(e)} index={-1} />{" "}
+    <EditableRow row={newRow} onChange={(e: any) => onChange(e)} index={-1} />
     <TableCell>
       <Button variant="contained" disabled={!isValid} onClick={onAdd}>
         Add
@@ -313,7 +325,7 @@ const NewRow = ({ newRow, onAdd, onChange, isValid }: any) => (
 
 // Check if all fields in a row are filled
 const isAllFieldsFulfilled = (row: Store) => {
-  return row.name && row.address && row.day && row.hour && row.manager;
+  return row.name && row.address && row.day && row.hour && row.manager && row.managerEmail;
 };
 
 const PageWrapper = styled(IPageWrapper)`
