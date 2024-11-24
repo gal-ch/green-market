@@ -7,7 +7,6 @@ import dayjs from 'dayjs';
 import { AccountService } from 'account/account.service';
 import { PaymentService } from 'payment/payment.service';
 import { MailService } from 'mail/mail.service';
-import { sum } from 'ramda';
 import * as Handlebars from 'handlebars';
 
 @Injectable()
@@ -70,9 +69,12 @@ export class OrderService {
         store: orderDetails.store.id,
         account: account.id,
       });
-      const totalPrice = sum(
-        orderDetails.details?.map((item) => item.product.price * item.quantity),
+
+      let totalPrice = 0;
+      orderDetails.details?.forEach(
+        (item) => (totalPrice += item.product.price * item.quantity),
       );
+
       const htmlContent = this.getOrderConfirmationHtml(
         orderDetails.clientName,
         orderDetails.details,
@@ -85,6 +87,7 @@ export class OrderService {
         template: 'order-confirmation',
         html: htmlContent,
       });
+      return paymentResponse;
     } catch (e) {
       console.log(e);
     }
