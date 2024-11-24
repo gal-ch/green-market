@@ -1,6 +1,12 @@
 import { Account } from 'account/entities/account.entity';
 import { Order } from 'order/entities/order.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 
 @Entity()
 export class Store {
@@ -12,6 +18,9 @@ export class Store {
 
   @Column()
   manager: string;
+
+  @Column()
+  managerEmail: string;
 
   @Column()
   address: string;

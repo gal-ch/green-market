@@ -71,7 +71,7 @@ export class OrderService {
         account: account.id,
       });
       const totalPrice = sum(
-        orderDetails.details?.map((item) => item.price * item.amount),
+        orderDetails.details?.map((item) => item.product.price * item.quantity),
       );
       const htmlContent = this.getOrderConfirmationHtml(
         orderDetails.clientName,
@@ -90,17 +90,17 @@ export class OrderService {
     }
   }
 
-  getOrderConfirmationHtml(clientName, details, totalPrice) {
+  getOrderConfirmationHtml(clientName: string, details, totalPrice) {
     const source = `
-      <h1>Your Order is Confirmed!</h1>
-      <p>Thank you for your order, {{clientName}}.</p>
-      <p>Order Details:</p>
+      <h3>ההזמנה שלך אושרה!</h3>
+      <p>תודה שקנית אצלנו, {{clientName}}.</p>
+      <p>מצורף פירוט המוצרים:</p>
       <ul>
         {{#each details}}
-          <li>{{this.productName}} - {{this.amount}} x {{this.price}} ILS</li>
+          <li>{{this.product.name}} - {{this.quantity}} x {{this.product.price}} ILS</li>
         {{/each}}
       </ul>
-      <p>Total: {{totalPrice}} ILS</p>
+      <p>סך הכל: {{totalPrice}} ILS</p>
     `;
 
     const template = Handlebars.compile(source);
@@ -113,7 +113,7 @@ export class OrderService {
     endDate,
     filters,
     accountId,
-    open
+    open,
   }: {
     storeId?: number;
     startDate?: string;
@@ -159,7 +159,6 @@ export class OrderService {
         account: { id: accountId },
       };
     }
-
 
     console.log(queryOptions);
 

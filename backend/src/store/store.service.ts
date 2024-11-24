@@ -7,6 +7,7 @@ import { AccountService } from 'account/account.service';
 import { Order } from 'order/entities/order.entity';
 import { OrderService } from 'order/order.service';
 import { MailService } from 'mail/mail.service';
+import * as Handlebars from 'handlebars';
 
 @Injectable()
 export class StoreService {
@@ -120,8 +121,8 @@ export class StoreService {
 
           await this.mailService.sendOrderConfirmation({
             account,
-            email: account.email,
-            subject: `${store.name} Product Summary`,
+            email: store.managerEmail || account.email,
+            subject: `${store.name} טבלת הזמנות עבור`,
             template: 'store-report',
             context: {
               storeName: store.name,
@@ -130,6 +131,11 @@ export class StoreService {
               report,
             },
             attachments: tableReportExcel,
+            html: this.generateOrdersTableHtml(
+              store.manager,
+              store.name,
+              store.day,
+            ),
           });
         }),
       );
@@ -140,35 +146,26 @@ export class StoreService {
     }
   }
 
-  generateOrderTableHtml(report: Order[]): string {
-    const header = `
-      <thead>
-        <tr>
-          <th>Product</th>
-          <th>Amount</th>
-          <th>Price</th>
-        </tr>
-      </thead>
+  generateOrdersTableHtml(
+    managerName: string,
+    storeName: string,
+    day: string,
+  ): string {
+    const source = `
+    <div dir="rtl">
+      <h3>שלום {{managerName}}</h3>
+      <div style="display: flex; flex-direction: row;">
+          <p> מצורפת טבלת ההזמנות עבור</p> 
+          <p>{{storeName}}</p>
+      </div>
+      <div style="display: flex; flex-direction: row;">
+          <p> עבור יום</p>
+          <p>{{day}}</p>
+      </div>
+    </div>
     `;
 
-    const rows = report
-      .map(
-        (item) => `
-        <tr>
-
-
-        </tr>
-      `,
-      )
-      .join('');
-
-    return `
-      <table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width: 100%;">
-        ${header}
-        <tbody>
-          ${rows}
-        </tbody>
-      </table>
-    `;
+    const template = Handlebars.compile(source);
+    return template({ managerName, storeName, day });
   }
 }
