@@ -39,21 +39,21 @@ import { PaymentService } from 'payment/payment.service';
 @Module({
   imports: [
     HttpModule,
-    PassportModule.register({ defaultStrategy: 'jwt' }),
+    //  PassportModule.register({ defaultStrategy: 'jwt' }),
 
     ConfigModule.forRoot({
-      envFilePath: process.env.NODE_ENV === 'testing' ? '.env.testing' : '.env',
+      envFilePath: '.env',
       isGlobal: true,
     }),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get('JWT_SECRET'),
-        signOptions: { expiresIn: '1w' },
-        global: true,
-      }),
-    }),
+    // JwtModule.registerAsync({
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   useFactory: (configService: ConfigService) => ({
+    //     secret: configService.get('JWT_SECRET'),
+    //     signOptions: { expiresIn: '1w' },
+    //     global: true,
+    //   }),
+    // }),
     MailerModule.forRoot({
       transport: {
         host: process.env.EMAIL_HOST,
@@ -79,7 +79,7 @@ import { PaymentService } from 'payment/payment.service';
     }),
     TypeOrmModule.forFeature([User, Product, Account, Store, Order]),
 
-    AuthModule,
+    //  AuthModule,
     StoreModule,
     OrderModule,
     AccountModule,
@@ -99,10 +99,10 @@ import { PaymentService } from 'payment/payment.service';
     UserService,
     StoreService,
     UploadService,
-    JwtService,
-    AuthService,
+    // JwtService,
+    //    AuthService,
     MailService,
-    AccountMiddleware,
+    //   AccountMiddleware,
     // HttpService,
     PaymentService,
   ],

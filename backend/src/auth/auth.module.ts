@@ -16,10 +16,10 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot(),
 
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'yourSecretKey',
-      signOptions: { expiresIn: '2w' },
-    }),
+    // JwtModule.register({
+    //   secret: process.env.JWT_SECRET || 'yourSecretKey',
+    //   signOptions: { expiresIn: '2w' },
+    // }),
     UserModule,
     AccountModule,
   ],
