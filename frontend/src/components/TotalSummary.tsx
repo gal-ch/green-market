@@ -112,7 +112,7 @@ const TotalSummary: React.FC<ITotalSummary> = () => {
         orderDetails,
         cardDetails,
       });
-      if (response?.status === 200) {
+    //  if (response?.status === 200) {
         setPaymentSuccess(true);
         localStorage.setItem(
           "userDetails",
@@ -122,7 +122,7 @@ const TotalSummary: React.FC<ITotalSummary> = () => {
             phone: clientPhoneNumber,
           })
         );
-      }
+     // }
     } catch (error) {
       console.error("Payment failed:", error);
     }
